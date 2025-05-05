@@ -15,6 +15,7 @@ abstract class AuthRepository {
     required int age,
     required String phone,
     required String password,
+    required String token,
     required String fcmToken,
     required String deviceId,
   });

@@ -28,8 +28,10 @@ class SignUpData {
   String? email;
   String? phone;
   String? password;
+  String? token;
   int? age;
   String? deviceId;
+  String? imageUrl;
 
   SignUpData({
     this.fcmToken,
@@ -37,8 +39,10 @@ class SignUpData {
     this.email,
     this.phone,
     this.password,
+    this.token,
     this.age,
     this.deviceId,
+    this.imageUrl,
   });
 
   SignUpData.fromJson(Map<String, dynamic> json) {
@@ -47,8 +51,10 @@ class SignUpData {
     email = json['email'];
     phone = json['phone'];
     password = json['password'];
+    token = json['token'];
     age = json['age'];
     deviceId = json['deviceId'];
+    imageUrl = json['imageUrl'];
   }
 
   Map<String, dynamic> toJson() {
@@ -58,8 +64,10 @@ class SignUpData {
     data['email'] = email;
     data['phone'] = phone;
     data['password'] = password;
+    data['token'] = token;
     data['age'] = age;
     data['deviceId'] = deviceId;
+    data['imageUrl'] = imageUrl;
     return data;
   }
 }

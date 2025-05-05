@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class LoginFormField extends StatelessWidget {
+class AuthFormField extends StatelessWidget {
   final TextEditingController? controller;
   final int? maxLength;
   final String? hint;
@@ -9,7 +9,7 @@ class LoginFormField extends StatelessWidget {
   final Widget? suffixIcon;
   final String? prefixText;
 
-  const LoginFormField({
+  const AuthFormField({
     super.key,
     this.controller,
     this.maxLength,
@@ -25,6 +25,7 @@ class LoginFormField extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(12.0),
       child: TextFormField(
+        controller: controller,
         maxLength: maxLength,
         keyboardType: keyboardType,
         obscureText: obscureText,

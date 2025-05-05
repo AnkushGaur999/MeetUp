@@ -2,8 +2,7 @@ import 'package:meet_up/core/network/data_state.dart';
 import 'package:meet_up/data/models/login_response.dart';
 import 'package:meet_up/data/models/sign_up_response.dart';
 import 'package:meet_up/data/sources/auth_data_souce.dart';
-import 'package:meet_up/domain/repositories/auth_repository.dart'
-    show AuthRepository;
+import 'package:meet_up/domain/repositories/auth_repository.dart';
 
 class AuthRepositoryImpl extends AuthRepository {
   final AuthDataSource authDataSource;
@@ -30,6 +29,7 @@ class AuthRepositoryImpl extends AuthRepository {
     required int age,
     required String phone,
     required String password,
+    required String token,
     required String fcmToken,
     required String deviceId,
   }) {
@@ -39,6 +39,7 @@ class AuthRepositoryImpl extends AuthRepository {
       age: age,
       phone: phone,
       password: password,
+      token: token,
       fcmToken: fcmToken,
       deviceId: deviceId,
     );

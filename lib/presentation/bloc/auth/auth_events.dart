@@ -1,8 +1,8 @@
 part of 'auth_bloc.dart';
 
-sealed class AuthEvent extends Equatable {}
+sealed class AuthEvents extends Equatable {}
 
-final class UserLoginEvent extends AuthEvent {
+final class UserLoginEvent extends AuthEvents {
   final String phone;
   final String password;
 
@@ -12,14 +12,12 @@ final class UserLoginEvent extends AuthEvent {
   List<Object?> get props => [phone, password];
 }
 
-final class UserSignUpEvent extends AuthEvent {
+final class UserSignUpEvent extends AuthEvents {
   final String name;
   final String email;
   final int age;
   final String phone;
   final String password;
-  final String fcmToken;
-  final String deviceId;
 
   UserSignUpEvent({
     required this.name,
@@ -27,8 +25,6 @@ final class UserSignUpEvent extends AuthEvent {
     required this.age,
     required this.phone,
     required this.password,
-    required this.fcmToken,
-    required this.deviceId,
   });
 
   @override
@@ -38,7 +34,5 @@ final class UserSignUpEvent extends AuthEvent {
     age,
     phone,
     password,
-    fcmToken,
-    deviceId,
   ];
 }

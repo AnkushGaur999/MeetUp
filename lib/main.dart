@@ -6,6 +6,8 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:meet_up/config/routes/app_routes.dart';
 import 'package:meet_up/generated/l10n.dart';
 import 'package:meet_up/presentation/bloc/auth/auth_bloc.dart';
+import 'package:meet_up/presentation/bloc/buddy/buddy_bloc.dart';
+import 'package:meet_up/presentation/bloc/chat/chat_bloc.dart';
 import 'config/di/service_locator.dart';
 import 'core/services/notification_service.dart';
 import 'core/utils/firebase_options.dart';
@@ -26,7 +28,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-      providers: [BlocProvider(create: (_) => getIt<AuthBloc>())],
+      providers: [
+        BlocProvider(create: (_) => getIt<AuthBloc>()),
+        BlocProvider(create: (_) => getIt<BuddyBloc>()),
+        BlocProvider(create: (_) => getIt<ChatBloc>()),
+      ],
       child: MaterialApp.router(
         title: 'Meet Up',
         theme: ThemeData(
