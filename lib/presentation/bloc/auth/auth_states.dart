@@ -1,18 +1,18 @@
 part of 'auth_bloc.dart';
 
-sealed class AuthState extends Equatable {}
+sealed class AuthStates extends Equatable {}
 
-final class AuthInitial extends AuthState {
+final class AuthInitial extends AuthStates {
   @override
   List<Object?> get props => [];
 }
 
-final class LoginLoadingState extends AuthState {
+final class LoginLoadingState extends AuthStates {
   @override
   List<Object?> get props => [];
 }
 
-final class LoginLoadedState extends AuthState {
+final class LoginLoadedState extends AuthStates {
   final LoginResponse data;
 
   LoginLoadedState({required this.data});
@@ -21,7 +21,7 @@ final class LoginLoadedState extends AuthState {
   List<Object?> get props => [data];
 }
 
-final class LoginFailedState extends AuthState {
+final class LoginFailedState extends AuthStates {
   final String message;
 
   LoginFailedState({required this.message});
@@ -30,12 +30,12 @@ final class LoginFailedState extends AuthState {
   List<Object?> get props => [message];
 }
 
-final class SignUpLoadingState extends AuthState {
+final class SignUpLoadingState extends AuthStates {
   @override
   List<Object?> get props => [];
 }
 
-final class SignUpLoadedState extends AuthState {
+final class SignUpLoadedState extends AuthStates {
   final SignUpResponse data;
 
   SignUpLoadedState({required this.data});
@@ -44,7 +44,7 @@ final class SignUpLoadedState extends AuthState {
   List<Object?> get props => [data];
 }
 
-final class SignUpFailedState extends AuthState {
+final class SignUpFailedState extends AuthStates {
   final String message;
 
   SignUpFailedState({required this.message});

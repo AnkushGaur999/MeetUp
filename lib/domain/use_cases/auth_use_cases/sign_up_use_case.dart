@@ -13,6 +13,7 @@ class SignUpUseCase {
     required int age,
     required String phone,
     required String password,
+    required String token,
     required String fcmToken,
     required String deviceId,
   }) {
@@ -22,6 +23,7 @@ class SignUpUseCase {
       age: age,
       phone: phone,
       password: password,
+      token: token,
       fcmToken: fcmToken,
       deviceId: deviceId,
     );
