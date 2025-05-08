@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:meet_up/config/di/service_locator.dart';
 import 'package:meet_up/core/local/local_storage_manager.dart';
+import 'package:meet_up/core/utils/time_date_utils.dart';
 import 'package:meet_up/data/models/buddy.dart';
 import 'package:meet_up/data/models/user_chat.dart';
 import 'package:meet_up/presentation/bloc/chat/chat_bloc.dart';
@@ -22,7 +23,7 @@ class ChatDetailsPage extends StatefulWidget {
 class _ChatDetailsPageState extends State<ChatDetailsPage> {
   final TextEditingController _textController = TextEditingController();
 
-  bool _showEmoji = false, _isUploading = false;
+  bool _showEmoji = false;
   final _scrollController = ScrollController();
 
   late LocalStorageManager storageManager;
@@ -34,13 +35,6 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
     super.initState();
 
     storageManager = getIt<LocalStorageManager>();
-
-    context.read<ChatBloc>().add(
-      GetUserChatsEvent(
-        token: storageManager.token,
-        userId: widget.buddy.phone!,
-      ),
-    );
   }
 
   @override
@@ -77,21 +71,38 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
                       itemCount: userChatList.length,
                       itemBuilder: (context, index) {
                         return Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.all(12.0),
                           child: Row(
                             mainAxisAlignment:
-                            userChatList[index].fromId ==
-                                storageManager.token
-                                ? MainAxisAlignment.end
-                                : MainAxisAlignment.start,
+                                userChatList[index].fromId ==
+                                        storageManager.token
+                                    ? MainAxisAlignment.end
+                                    : MainAxisAlignment.start,
                             children: [
-                              Container(
-                                padding: EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.black12, ),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Text(userChatList[index].message!))],
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      border: Border.all(color: Colors.black12),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Text(userChatList[index].message!),
+                                  ),
+
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      getTimeFromTimeStamp(
+                                        userChatList[index].sent!,
+                                      ),
+                                      style: TextStyle(fontSize: 12),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                         );
                       },
@@ -106,46 +117,6 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
                   }
                 },
               ),
-              // child: BlocBuilder<ChatBloc, ChatStates>(
-              //   builder: (context, state) {
-              //     if (state is UserChatsLoadingState) {
-              //       return CircularProgressIndicator();
-              //     } else if (state is UserChatsLoadedState) {
-              //       return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-              //         stream: state.messages,
-              //         builder: (context, snapshot) {
-              //           if (snapshot.hasError) {
-              //             return Text('Error: ${snapshot.error}');
-              //           }
-              //           if (!snapshot.hasData) {
-              //             return CircularProgressIndicator();
-              //           }
-              //           final docs = snapshot.data?.docs;
-              //           userChatList =
-              //               docs
-              //                   ?.map(
-              //                     (value) => UserChat.fromJson(value.data()),
-              //                   )
-              //                   .toList() ??
-              //               [];
-              //           return ListView.builder(
-              //             itemCount: userChatList.length,
-              //             itemBuilder: (context, index) {
-              //               return ListTile(
-              //                 title: Text(
-              //                   userChatList[index].message ?? 'No message',
-              //                 ),
-              //               );
-              //             },
-              //           );
-              //         },
-              //       );
-              //     } else if (state is UserChatsFailedState) {
-              //       return Text('Error: ${state.message}');
-              //     }
-              //     return Container();
-              //   },
-              // ),
             ),
 
             Padding(
@@ -197,17 +168,16 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
                               final ImagePicker picker = ImagePicker();
 
                               // Picking multiple images
-                              final List<XFile> images = await picker
-                                  .pickMultiImage(imageQuality: 70);
+                              // final List<XFile> images = await picker
+                              //     .pickMultiImage(imageQuality: 70);
 
                               // uploading & sending image one by one
-                              for (var i in images) {
-                                // log('Image Path: ${i.path}');
-                                // setState(() => _isUploading = true);
-                                // await APIs.sendChatImage(
-                                //     widget.user, File(i.path));
-                                setState(() => _isUploading = false);
-                              }
+                              // for (var i in images) {
+                              // log('Image Path: ${i.path}');
+                              // setState(() => _isUploading = true);
+                              // await APIs.sendChatImage(
+                              //     widget.user, File(i.path));
+                              // }
                             },
                             icon: const Icon(
                               Icons.image,
@@ -227,11 +197,9 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
                                 imageQuality: 70,
                               );
                               if (image != null) {
-                                setState(() => _isUploading = true);
                                 //
                                 // await APIs.sendChatImage(
                                 //     widget.user, File(image.path));
-                                setState(() => _isUploading = false);
                               }
                             },
                             icon: const Icon(
@@ -250,23 +218,27 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
 
                   //send message button
                   MaterialButton(
-                    onPressed: () {
+                    onPressed: () async {
                       if (_textController.text.isNotEmpty) {
                         final time =
                             DateTime.now().millisecondsSinceEpoch.toString();
 
                         UserChat userChat = UserChat(
+                          name: widget.buddy.name,
                           fromId: storageManager.token,
                           toId: widget.buddy.token,
                           message: _textController.text,
                           sent: time,
                           type: "text",
+                          imageUrl: widget.buddy.imageUrl,
                           read: false,
                         );
 
                         context.read<ChatBloc>().add(
                           SendMessageToUserEvent(userChat: userChat),
                         );
+
+                        // context.read<ChatBloc>().add(GetRecentChatsEvent());
 
                         _textController.text = '';
                       }

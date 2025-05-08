@@ -7,24 +7,24 @@ final class ChatInitialState extends ChatStates {
   List<Object?> get props => [];
 }
 
-final class UserChatsLoadingState extends ChatStates {
+final class RecentChatsLoadingState extends ChatStates {
   @override
   List<Object?> get props => [];
 }
 
-final class UserChatsLoadedState extends ChatStates {
-  final Stream<QuerySnapshot<Map<String, dynamic>>> messages;
+final class RecentChatsLoadedState extends ChatStates {
+  final List<RecentChat> recentMessages;
 
-  UserChatsLoadedState({required this.messages});
+  RecentChatsLoadedState({required this.recentMessages});
 
   @override
-  List<Object?> get props => [messages];
+  List<Object?> get props => [recentMessages];
 }
 
-final class UserChatsFailedState extends ChatStates {
+final class RecentChatsFailedState extends ChatStates {
   final String message;
 
-  UserChatsFailedState({required this.message});
+  RecentChatsFailedState({required this.message});
 
   @override
   List<Object?> get props => [message];

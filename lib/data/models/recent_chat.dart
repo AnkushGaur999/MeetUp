@@ -1,17 +1,19 @@
-class UserChat {
+class RecentChat {
+  String? id;
   String? name;
   String? fromId;
-  String? message;
+  String? lastMessage;
   bool? read;
   String? sent;
   String? imageUrl;
   String? toId;
   String? type;
 
-  UserChat({
+  RecentChat({
+    this.id,
     this.name,
     this.fromId,
-    this.message,
+    this.lastMessage,
     this.read,
     this.sent,
     this.imageUrl,
@@ -19,10 +21,11 @@ class UserChat {
     this.type,
   });
 
-  UserChat.fromJson(Map<String, dynamic> json) {
+  RecentChat.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
     name = json['name'];
     fromId = json['fromId'];
-    message = json['message'];
+    lastMessage = json['lastMessage'];
     read = json['read'];
     sent = json['sent'];
     imageUrl = json['imageUrl'];
@@ -32,9 +35,10 @@ class UserChat {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
     data['name'] = name;
     data['fromId'] = fromId;
-    data['message'] = message;
+    data['lastMessage'] = lastMessage;
     data['read'] = read;
     data['sent'] = sent;
     data['imageUrl'] = imageUrl;

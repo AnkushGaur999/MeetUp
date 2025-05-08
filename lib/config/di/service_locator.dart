@@ -15,7 +15,7 @@ import 'package:meet_up/domain/use_cases/auth_use_cases/sign_up_use_case.dart';
 import 'package:meet_up/domain/use_cases/buddy_use_cases/addd_buddy_use_case.dart';
 import 'package:meet_up/domain/use_cases/buddy_use_cases/get_all_buddies_use_cases.dart';
 import 'package:meet_up/domain/use_cases/buddy_use_cases/get_my_buddies_use_cases.dart';
-import 'package:meet_up/domain/use_cases/chat_use_cases/get_user_messages_use_case.dart';
+import 'package:meet_up/domain/use_cases/chat_use_cases/get_recent_chats_use_case.dart';
 import 'package:meet_up/domain/use_cases/chat_use_cases/send_message_to_user_use_case.dart';
 import 'package:meet_up/presentation/bloc/auth/auth_bloc.dart';
 import 'package:meet_up/presentation/bloc/buddy/buddy_bloc.dart';
@@ -91,8 +91,8 @@ Future<void> setupDependencies() async {
     () => GetMyBuddiesUseCases(repository: getIt<BuddyRepository>()),
   );
 
-  getIt.registerFactory<GetUserMessagesUseCase>(
-    () => GetUserMessagesUseCase(repository: getIt<ChatRepository>()),
+  getIt.registerFactory<GetRecentChatsUseCase>(
+    () => GetRecentChatsUseCase(repository: getIt<ChatRepository>()),
   );
 
   getIt.registerFactory<SendMessageToUserUseCase>(
@@ -120,7 +120,7 @@ Future<void> setupDependencies() async {
 
   getIt.registerFactory<ChatBloc>(
     () => ChatBloc(
-      getUserMessagesUseCase: getIt<GetUserMessagesUseCase>(),
+      getRecentChatsUseCase: getIt<GetRecentChatsUseCase>(),
       sendMessageToUserUseCase: getIt<SendMessageToUserUseCase>(),
     ),
   );

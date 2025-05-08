@@ -2,14 +2,11 @@ part of 'chat_bloc.dart';
 
 sealed class ChatEvents extends Equatable {}
 
-final class GetUserChatsEvent extends ChatEvents {
-  final String token;
-  final String userId;
-
-  GetUserChatsEvent({required this.token, required this.userId});
+final class GetRecentChatsEvent extends ChatEvents {
+  GetRecentChatsEvent();
 
   @override
-  List<Object?> get props => [token, userId];
+  List<Object?> get props => [];
 }
 
 final class SendMessageToUserEvent extends ChatEvents {

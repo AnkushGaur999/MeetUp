@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:meet_up/core/local/local_storage_manager.dart';
 import 'package:meet_up/core/network/data_state.dart';
 import 'package:meet_up/data/models/buddy.dart';

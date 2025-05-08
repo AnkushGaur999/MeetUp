@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:meet_up/data/models/buddy.dart';
-class ChatItem extends StatelessWidget {
-  final Buddy buddy;
-  const ChatItem({super.key, required this.buddy});
+import 'package:meet_up/core/utils/time_date_utils.dart';
+import 'package:meet_up/data/models/recent_chat.dart';
+
+class RecentChatItem extends StatelessWidget {
+  final RecentChat recentChat;
+
+  const RecentChatItem({super.key, required this.recentChat});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +19,10 @@ class ChatItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.max,
             children: [
-              CircleAvatar(radius: 30, child: Image.network(buddy.imageUrl!)),
+              CircleAvatar(
+                radius: 30,
+                child: Image.network(recentChat.imageUrl!),
+              ),
 
               SizedBox(width: 10),
 
@@ -25,7 +31,7 @@ class ChatItem extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      buddy.name!,
+                      recentChat.name!,
                       style: TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
@@ -35,10 +41,8 @@ class ChatItem extends StatelessWidget {
                     ),
 
                     Text(
-                      'This is last message',
-                      style: TextStyle(
-                        color: Colors.black,
-                      ),
+                      recentChat.lastMessage!,
+                      style: TextStyle(color: Colors.black),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -48,9 +52,8 @@ class ChatItem extends StatelessWidget {
 
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text("Yesterday"),
+                child: Text(getTimeAgo(int.parse(recentChat.sent!))),
               ),
-
             ],
           ),
         ),

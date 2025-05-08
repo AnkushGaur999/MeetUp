@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:meet_up/data/models/buddy.dart';
 import 'package:meet_up/presentation/pages/authentication/login/login_page.dart';
 import 'package:meet_up/presentation/pages/authentication/sign_up/sign_up_page.dart';
+import 'package:meet_up/presentation/pages/dashboard/buddies/buddies_page.dart';
 import 'package:meet_up/presentation/pages/dashboard/chats/chat_details_page.dart';
 import 'package:meet_up/presentation/pages/dashboard/chats/chats_page.dart';
 import 'package:meet_up/presentation/pages/dashboard/dashboard_page.dart';
@@ -17,6 +18,7 @@ class AppRoutes {
   static const dashboard = "dashboard";
   static const home = "home";
   static const chats = "chats";
+  static const buddies = "buddies";
   static const chatDetails = "chatDetails";
   static const status = "status";
   static const settings = "settings";
@@ -27,6 +29,7 @@ class AppRoutes {
   static const _dashboard = "/dashboard";
   static const _home = "/home";
   static const _chats = "/chats";
+  static const _buddies = "/buddies";
   static const _chatDetails = "/chatDetails";
   static const _status = "/status";
   static const _settings = "/settings";
@@ -55,6 +58,7 @@ class AppRoutes {
         path: _dashboard,
         builder: (context, state) => DashboardPage(),
       ),
+
       GoRoute(name: home, path: _home, builder: (context, state) => HomePage()),
 
       GoRoute(
@@ -64,9 +68,16 @@ class AppRoutes {
       ),
 
       GoRoute(
+        name: buddies,
+        path: _buddies,
+        builder: (context, state) => BuddiesPage(),
+      ),
+
+      GoRoute(
         name: chatDetails,
         path: _chatDetails,
-        builder: (context, state) => ChatDetailsPage(buddy: state.extra as Buddy,),
+        builder:
+            (context, state) => ChatDetailsPage(buddy: state.extra as Buddy),
       ),
 
       GoRoute(
