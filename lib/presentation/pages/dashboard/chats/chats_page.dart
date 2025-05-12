@@ -6,11 +6,9 @@ import 'package:meet_up/config/routes/app_routes.dart';
 import 'package:meet_up/core/local/local_storage_manager.dart';
 import 'package:meet_up/data/models/buddy.dart';
 import 'package:meet_up/data/models/recent_chat.dart';
-import 'package:meet_up/presentation/bloc/buddy/buddy_bloc.dart';
 import 'package:meet_up/presentation/bloc/chat/chat_bloc.dart';
 import 'package:meet_up/presentation/pages/dashboard/chats/widgets/recent_chat_item.dart';
 import '../../../../config/di/service_locator.dart';
-import '../buddies/widgets/add_buddies_bottom_sheet.dart';
 
 class ChatsPage extends StatefulWidget {
   const ChatsPage({super.key});
@@ -32,6 +30,7 @@ class _ChatsPageState extends State<ChatsPage> {
   Stream<DocumentSnapshot<Map<String, dynamic>>> _streamLastMessage({
     required String id,
   }) {
+
     return firebaseFireStore
         .collection("chats/${_storageManager.token}/recent_chats/")
         .doc(id)

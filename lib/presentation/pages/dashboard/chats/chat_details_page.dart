@@ -35,7 +35,21 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
     super.initState();
 
     storageManager = getIt<LocalStorageManager>();
+    _scrollToBottom();
   }
+
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 100),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -235,12 +249,16 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
                         );
 
                         context.read<ChatBloc>().add(
-                          SendMessageToUserEvent(userChat: userChat),
+                          SendMessageToUserEvent(
+                            userChat: userChat,
+                            userFcmToken: widget.buddy.fcmToken!,
+                          ),
                         );
 
-                        // context.read<ChatBloc>().add(GetRecentChatsEvent());
-
                         _textController.text = '';
+
+                        _scrollToBottom();
+
                       }
                     },
                     minWidth: 0,

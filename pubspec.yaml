@@ -38,6 +38,10 @@ dependencies:
   # For picking images
   image_picker: ^1.1.2
   timeago: ^3.7.0
+  http: ^1.4.0
+
+  # Bearer Token for Push Notification
+  googleapis_auth: ^2.0.0
 
 dev_dependencies:
   flutter_test:

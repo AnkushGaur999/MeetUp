@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:meet_up/core/local/local_storage_manager.dart';
 import 'package:meet_up/core/network/data_state.dart';
+import 'package:meet_up/core/services/notification_service.dart';
 import 'package:meet_up/data/models/recent_chat.dart';
 import 'package:meet_up/data/models/user_chat.dart';
 
@@ -35,6 +36,7 @@ class ChatDataSource {
 
   Future<DataState<bool>> sendMessageToUser({
     required UserChat userChat,
+    required String userFcmToken,
   }) async {
     try {
       await fireStore
@@ -49,7 +51,7 @@ class ChatDataSource {
           .collection(storageManager.token)
           .add(userChat.toJson());
 
-      final lastMessage = {
+      final Map<String, dynamic> selfLastMsg = {
         "id": userChat.toId,
         "fromId": storageManager.token,
         "lastMessage": userChat.message,
@@ -64,12 +66,30 @@ class ChatDataSource {
       await fireStore
           .collection('chats/${storageManager.token}/recent_chats/')
           .doc(userChat.toId)
-          .set(lastMessage);
+          .set(selfLastMsg);
+
+      final Map<String, dynamic> userLastMsg = {
+        "id": storageManager.token,
+        "fromId": storageManager.token,
+        "lastMessage": userChat.message,
+        "read": false,
+        "sent": userChat.sent,
+        "toId": userChat.toId,
+        "type": "text",
+        "imageUrl": userChat.imageUrl,
+        "name": userChat.name,
+      };
 
       await fireStore
           .collection('chats/${userChat.toId}/recent_chats/')
           .doc(storageManager.token)
-          .set(lastMessage);
+          .set(userLastMsg);
+
+      NotificationService.sendPushNotification(
+        userFcmToken,
+        userChat.message!,
+        userChat.name!,
+      );
 
       return DataSuccess(data: true);
     } on SocketException catch (_) {
