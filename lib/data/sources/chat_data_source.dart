@@ -36,7 +36,6 @@ class ChatDataSource {
 
   Future<DataState<bool>> sendMessageToUser({
     required UserChat userChat,
-    required String userFcmToken,
   }) async {
     try {
       await fireStore
@@ -51,6 +50,33 @@ class ChatDataSource {
           .collection(storageManager.token)
           .add(userChat.toJson());
 
+      final fromUser =
+          await fireStore
+              .collection("users")
+              .where("token", isEqualTo: storageManager.token)
+              .get();
+
+      /// Set recent message table data of sender end.
+
+      final Map<String, dynamic> userLastMsg = {
+        "id": storageManager.token,
+        "fromId": storageManager.token,
+        "lastMessage": userChat.message,
+        "read": false,
+        "sent": userChat.sent,
+        "toId": userChat.toId,
+        "type": userChat.type,
+        "imageUrl": fromUser.docs.first.data()["imageUrl"] as String?,
+        "name": fromUser.docs.first.data()["name"] as String?,
+      };
+
+      await fireStore
+          .collection('chats/${userChat.toId}/recent_chats/')
+          .doc(storageManager.token)
+          .set(userLastMsg);
+
+      /// Set recent message table data of receiver end.
+
       final Map<String, dynamic> selfLastMsg = {
         "id": userChat.toId,
         "fromId": storageManager.token,
@@ -58,7 +84,7 @@ class ChatDataSource {
         "read": false,
         "sent": userChat.sent,
         "toId": userChat.toId,
-        "type": "text",
+        "type": userChat.type,
         "imageUrl": userChat.imageUrl,
         "name": userChat.name,
       };
@@ -68,29 +94,21 @@ class ChatDataSource {
           .doc(userChat.toId)
           .set(selfLastMsg);
 
-      final Map<String, dynamic> userLastMsg = {
-        "id": storageManager.token,
-        "fromId": storageManager.token,
-        "lastMessage": userChat.message,
-        "read": false,
-        "sent": userChat.sent,
-        "toId": userChat.toId,
-        "type": "text",
-        "imageUrl": userChat.imageUrl,
-        "name": userChat.name,
-      };
+      final toUser =
+          await fireStore
+              .collection("users")
+              .where("token", isEqualTo: userChat.toId)
+              .get();
 
-      await fireStore
-          .collection('chats/${userChat.toId}/recent_chats/')
-          .doc(storageManager.token)
-          .set(userLastMsg);
+      final userToken = toUser.docs.first.data()["fcmToken"] as String?;
 
-      NotificationService.sendPushNotification(
-        userFcmToken,
-        userChat.message!,
-        userChat.name!,
-      );
-
+      if (userToken != null && userToken.isNotEmpty) {
+        NotificationService.sendPushNotification(
+          userToken,
+          userChat.message!,
+          userChat.name!,
+        );
+      }
       return DataSuccess(data: true);
     } on SocketException catch (_) {
       return DataError(message: "Please Check Your Internet Connection!");

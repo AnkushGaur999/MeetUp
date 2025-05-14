@@ -1,10 +1,11 @@
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
-import 'package:flutter/foundation.dart' as foundation;
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:meet_up/config/di/service_locator.dart';
+import 'package:meet_up/core/constants/meesage_type.dart';
 import 'package:meet_up/core/local/local_storage_manager.dart';
 import 'package:meet_up/core/utils/time_date_utils.dart';
 import 'package:meet_up/data/models/buddy.dart';
@@ -28,6 +29,8 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
 
   late LocalStorageManager storageManager;
 
+  final FirebaseStorage _storage = FirebaseStorage.instance;
+
   List<UserChat> userChatList = [];
 
   @override
@@ -50,11 +53,28 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Chat")),
+      appBar: AppBar(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 20,
+                  child: Image.network(widget.buddy.imageUrl!),
+                ),
+                SizedBox(width: 20),
+                Text(widget.buddy.name!),
+              ],
+            ),
+
+            IconButton(onPressed: (){}, icon: Icon(Icons.video_call_rounded)),
+          ],
+        ),
+      ),
       body: SafeArea(
         child: Column(
           children: [
@@ -81,7 +101,10 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
                           .toList() ??
                       [];
                   if (userChatList.isNotEmpty) {
+                    _scrollToBottom();
+
                     return ListView.builder(
+                      controller: _scrollController,
                       itemCount: userChatList.length,
                       itemBuilder: (context, index) {
                         return Padding(
@@ -102,7 +125,15 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
                                       border: Border.all(color: Colors.black12),
                                       borderRadius: BorderRadius.circular(10),
                                     ),
-                                    child: Text(userChatList[index].message!),
+                                    child:
+                                        userChatList[index].type == "text"
+                                            ? Text(userChatList[index].message!)
+                                            : Image.network(
+                                              userChatList[index].message!,
+                                              width: 240,
+                                              height: 240,
+                                              fit: BoxFit.contain,
+                                            ),
                                   ),
 
                                   Padding(
@@ -145,18 +176,7 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
                       ),
                       child: Row(
                         children: [
-                          //emoji button
-                          IconButton(
-                            onPressed: () {
-                              FocusScope.of(context).unfocus();
-                              setState(() => _showEmoji = !_showEmoji);
-                            },
-                            icon: const Icon(
-                              Icons.emoji_emotions,
-                              color: Colors.blueAccent,
-                              size: 25,
-                            ),
-                          ),
+                          SizedBox(width: 10),
 
                           Expanded(
                             child: TextField(
@@ -170,7 +190,7 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
                               },
                               decoration: const InputDecoration(
                                 hintText: 'Type Something...',
-                                hintStyle: TextStyle(color: Colors.blueAccent),
+                                hintStyle: TextStyle(color: Colors.black),
                                 border: InputBorder.none,
                               ),
                             ),
@@ -181,21 +201,42 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
                             onPressed: () async {
                               final ImagePicker picker = ImagePicker();
 
-                              // Picking multiple images
-                              // final List<XFile> images = await picker
-                              //     .pickMultiImage(imageQuality: 70);
+                              //  Picking multiple images
+                              final List<XFile> images = await picker
+                                  .pickMultiImage(imageQuality: 70);
 
                               // uploading & sending image one by one
-                              // for (var i in images) {
-                              // log('Image Path: ${i.path}');
-                              // setState(() => _isUploading = true);
-                              // await APIs.sendChatImage(
-                              //     widget.user, File(i.path));
-                              // }
+                              for (var i in images) {
+                                final imageUrl = await sendChatImage(
+                                  widget.buddy,
+                                  File(i.path),
+                                );
+
+                                final time =
+                                    DateTime.now().millisecondsSinceEpoch
+                                        .toString();
+
+                                UserChat userChat = UserChat(
+                                  name: widget.buddy.name,
+                                  fromId: storageManager.token,
+                                  toId: widget.buddy.token,
+                                  message: imageUrl,
+                                  sent: time,
+                                  type: MessageType.image.name.toString(),
+                                  imageUrl: widget.buddy.imageUrl,
+                                  read: false,
+                                );
+
+                                if (context.mounted) {
+                                  context.read<ChatBloc>().add(
+                                    SendMessageToUserEvent(userChat: userChat),
+                                  );
+                                }
+                              }
                             },
                             icon: const Icon(
                               Icons.image,
-                              color: Colors.blueAccent,
+                              color: Colors.black,
                               size: 26,
                             ),
                           ),
@@ -211,9 +252,31 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
                                 imageQuality: 70,
                               );
                               if (image != null) {
-                                //
-                                // await APIs.sendChatImage(
-                                //     widget.user, File(image.path));
+                                final imageUrl = await sendChatImage(
+                                  widget.buddy,
+                                  File(image.path),
+                                );
+
+                                final time =
+                                    DateTime.now().millisecondsSinceEpoch
+                                        .toString();
+
+                                UserChat userChat = UserChat(
+                                  name: widget.buddy.name,
+                                  fromId: storageManager.token,
+                                  toId: widget.buddy.token,
+                                  message: imageUrl,
+                                  sent: time,
+                                  type: MessageType.image.name.toString(),
+                                  imageUrl: widget.buddy.imageUrl,
+                                  read: false,
+                                );
+
+                                if (context.mounted) {
+                                  context.read<ChatBloc>().add(
+                                    SendMessageToUserEvent(userChat: userChat),
+                                  );
+                                }
                               }
                             },
                             icon: const Icon(
@@ -243,22 +306,18 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
                           toId: widget.buddy.token,
                           message: _textController.text,
                           sent: time,
-                          type: "text",
+                          type: MessageType.text.toString(),
                           imageUrl: widget.buddy.imageUrl,
                           read: false,
                         );
 
                         context.read<ChatBloc>().add(
-                          SendMessageToUserEvent(
-                            userChat: userChat,
-                            userFcmToken: widget.buddy.fcmToken!,
-                          ),
+                          SendMessageToUserEvent(userChat: userChat),
                         );
 
                         _textController.text = '';
 
                         _scrollToBottom();
-
                       }
                     },
                     minWidth: 0,
@@ -281,33 +340,27 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
             ),
 
             SizedBox(height: 10),
-
-            Offstage(
-              offstage: !_showEmoji,
-              child: EmojiPicker(
-                textEditingController: _textController,
-                scrollController: _scrollController,
-                config: Config(
-                  height: 256,
-                  checkPlatformCompatibility: true,
-                  viewOrderConfig: const ViewOrderConfig(),
-                  emojiViewConfig: EmojiViewConfig(
-                    emojiSizeMax:
-                        28 *
-                        (foundation.defaultTargetPlatform == TargetPlatform.iOS
-                            ? 1.2
-                            : 1.0),
-                  ),
-                  skinToneConfig: const SkinToneConfig(),
-                  categoryViewConfig: const CategoryViewConfig(),
-                  bottomActionBarConfig: const BottomActionBarConfig(),
-                  searchViewConfig: const SearchViewConfig(),
-                ),
-              ),
-            ),
           ],
         ),
       ),
     );
+  }
+
+  //send chat image
+  Future<String> sendChatImage(Buddy buddy, File file) async {
+    //getting image file extension
+    final ext = file.path.split('.').last;
+
+    //storage file ref with path
+    final ref = _storage.ref().child(
+      'images/${buddy.token}/${DateTime.now().millisecondsSinceEpoch}.$ext',
+    );
+
+    //uploading image
+    await ref
+        .putFile(file, SettableMetadata(contentType: 'image/$ext'));
+
+    //updating image in firestore database
+    return await ref.getDownloadURL();
   }
 }

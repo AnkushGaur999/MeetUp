@@ -5,5 +5,5 @@ import 'package:meet_up/data/models/user_chat.dart';
 abstract class ChatRepository {
   Future<DataState<List<RecentChat>>> getRecentChats();
 
-  Future<DataState<bool>> sendMessageToUser({required UserChat userChat,required String userFcmToken,});
+  Future<DataState<bool>> sendMessageToUser({required UserChat userChat});
 }

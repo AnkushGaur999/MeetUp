@@ -9,6 +9,7 @@ import 'package:meet_up/presentation/pages/dashboard/dashboard_page.dart';
 import 'package:meet_up/presentation/pages/dashboard/home/home_page.dart';
 import 'package:meet_up/presentation/pages/dashboard/settings/settings_page.dart';
 import 'package:meet_up/presentation/pages/dashboard/status/status_page.dart';
+import 'package:meet_up/presentation/pages/profile/profile_page.dart';
 import 'package:meet_up/presentation/pages/splash/splash_page.dart';
 
 class AppRoutes {
@@ -21,6 +22,7 @@ class AppRoutes {
   static const buddies = "buddies";
   static const chatDetails = "chatDetails";
   static const status = "status";
+  static const profile = "profile";
   static const settings = "settings";
 
   static const _splash = "/";
@@ -32,6 +34,7 @@ class AppRoutes {
   static const _buddies = "/buddies";
   static const _chatDetails = "/chatDetails";
   static const _status = "/status";
+  static const _profile = "/profile";
   static const _settings = "/settings";
 
   static final router = GoRouter(
@@ -90,6 +93,12 @@ class AppRoutes {
         name: settings,
         path: _settings,
         builder: (context, state) => SettingsPage(),
+      ),
+
+      GoRoute(
+        name: profile,
+        path: _profile,
+        builder: (context, state) => ProfilePage(),
       ),
     ],
   );

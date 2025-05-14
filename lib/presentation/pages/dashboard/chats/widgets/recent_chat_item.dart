@@ -40,12 +40,20 @@ class RecentChatItem extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
 
-                    Text(
-                      recentChat.lastMessage!,
-                      style: TextStyle(color: Colors.black),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                    recentChat.type == "image"
+                        ? Row(
+                          children: const [
+                            Icon(Icons.photo),
+                            SizedBox(width: 8),
+                            Text("Photo"),
+                          ],
+                        )
+                        : Text(
+                          recentChat.lastMessage!,
+                          style: TextStyle(color: Colors.black),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                   ],
                 ),
               ),

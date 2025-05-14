@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:meet_up/config/routes/app_routes.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -18,6 +20,7 @@ class SettingsPage extends StatelessWidget {
               description: 'Edit your profile information',
               onTap: () {
                 // Navigate to Profile settings
+                context.pushNamed(AppRoutes.profile);
               },
             ),
             SettingsItem(

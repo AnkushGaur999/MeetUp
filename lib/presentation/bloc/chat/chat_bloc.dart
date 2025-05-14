@@ -53,7 +53,6 @@ class ChatBloc extends Bloc<ChatEvents, ChatStates> {
 
     final response = await sendMessageToUserUseCase.call(
       userChat: event.userChat,
-      userFcmToken: event.userFcmToken,
     );
 
     if (response is DataSuccess) {
