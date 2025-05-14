@@ -4,7 +4,6 @@ class Buddy {
   String? email;
   String? phone;
   String? about;
-  String? fcmToken;
   int? age;
   String? imageUrl;
 
@@ -17,7 +16,6 @@ class Buddy {
     email = json["email"] as String;
     about = json["about"] as String;
     phone = json["phone"] as String;
-    fcmToken = json["fcmToken"] as String;
     imageUrl = json["imageUrl"] as String;
   }
 
@@ -28,7 +26,6 @@ class Buddy {
       "email": email,
       "age": age,
       "phone": phone,
-      "fcmToken": fcmToken,
       "about": about,
       "imageUrl": imageUrl,
     };

@@ -1,15 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:meet_up/core/local/local_storage_manager.dart';
+import 'package:meet_up/data/repositories_impl/account_repository_impl.dart';
 import 'package:meet_up/data/repositories_impl/auth_repository_impl.dart';
 import 'package:meet_up/data/repositories_impl/buddy_repository_impl.dart';
 import 'package:meet_up/data/repositories_impl/chat_repository_impl.dart';
+import 'package:meet_up/data/sources/account_data_source.dart';
 import 'package:meet_up/data/sources/auth_data_souce.dart';
 import 'package:meet_up/data/sources/buddy_data_source.dart';
 import 'package:meet_up/data/sources/chat_data_source.dart';
+import 'package:meet_up/domain/repositories/account_repository.dart';
 import 'package:meet_up/domain/repositories/auth_repository.dart';
 import 'package:meet_up/domain/repositories/buddy_repository.dart';
 import 'package:meet_up/domain/repositories/chat_repository.dart';
+import 'package:meet_up/domain/use_cases/account_use_cases/get_my_profile_details_use_case.dart';
+import 'package:meet_up/domain/use_cases/account_use_cases/update_profile_picture.dart';
 import 'package:meet_up/domain/use_cases/auth_use_cases/login_use_case.dart';
 import 'package:meet_up/domain/use_cases/auth_use_cases/sign_up_use_case.dart';
 import 'package:meet_up/domain/use_cases/buddy_use_cases/addd_buddy_use_case.dart';
@@ -17,6 +23,7 @@ import 'package:meet_up/domain/use_cases/buddy_use_cases/get_all_buddies_use_cas
 import 'package:meet_up/domain/use_cases/buddy_use_cases/get_my_buddies_use_cases.dart';
 import 'package:meet_up/domain/use_cases/chat_use_cases/get_recent_chats_use_case.dart';
 import 'package:meet_up/domain/use_cases/chat_use_cases/send_message_to_user_use_case.dart';
+import 'package:meet_up/presentation/bloc/account/account_bloc.dart';
 import 'package:meet_up/presentation/bloc/auth/auth_bloc.dart';
 import 'package:meet_up/presentation/bloc/buddy/buddy_bloc.dart';
 import 'package:meet_up/presentation/bloc/chat/chat_bloc.dart';
@@ -25,6 +32,7 @@ import 'package:meet_up/presentation/bloc/chat/chat_bloc.dart';
 final GetIt getIt = GetIt.instance;
 
 final FirebaseFirestore firebaseFireStore = FirebaseFirestore.instance;
+final FirebaseStorage firebaseStorage = FirebaseStorage.instance;
 
 Future<void> setupDependencies() async {
   ///
@@ -53,6 +61,14 @@ Future<void> setupDependencies() async {
     ),
   );
 
+  getIt.registerFactory<AccountDataSource>(
+    () => AccountDataSource(
+      firebaseFirestore: firebaseFireStore,
+      firebaseStorage: firebaseStorage,
+      storageManager: getIt<LocalStorageManager>(),
+    ),
+  );
+
   ///
   /// Initialize Repositories
   ///
@@ -66,6 +82,10 @@ Future<void> setupDependencies() async {
 
   getIt.registerFactory<ChatRepository>(
     () => ChatRepositoryImpl(chatDataSource: getIt<ChatDataSource>()),
+  );
+
+  getIt.registerFactory<AccountRepository>(
+    () => AccountRepositoryImpl(accountDataSource: getIt<AccountDataSource>()),
   );
 
   ///
@@ -99,6 +119,18 @@ Future<void> setupDependencies() async {
     () => SendMessageToUserUseCase(repository: getIt<ChatRepository>()),
   );
 
+  getIt.registerFactory<GetMyProfileDetailsUseCase>(
+    () => GetMyProfileDetailsUseCase(
+      accountRepository: getIt<AccountRepository>(),
+    ),
+  );
+
+  getIt.registerFactory<UpdateProfilePictureUseCases>(
+    () => UpdateProfilePictureUseCases(
+      accountRepository: getIt<AccountRepository>(),
+    ),
+  );
+
   ///
   /// Initialize Blocs
   ///
@@ -122,6 +154,13 @@ Future<void> setupDependencies() async {
     () => ChatBloc(
       getRecentChatsUseCase: getIt<GetRecentChatsUseCase>(),
       sendMessageToUserUseCase: getIt<SendMessageToUserUseCase>(),
+    ),
+  );
+
+  getIt.registerFactory<AccountBloc>(
+    () => AccountBloc(
+      getMyProfileDetailsUseCase: getIt<GetMyProfileDetailsUseCase>(),
+      updateProfilePictureUseCases: getIt<UpdateProfilePictureUseCases>(),
     ),
   );
 }

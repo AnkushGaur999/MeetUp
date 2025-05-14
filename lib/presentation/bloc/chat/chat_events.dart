@@ -11,9 +11,8 @@ final class GetRecentChatsEvent extends ChatEvents {
 
 final class SendMessageToUserEvent extends ChatEvents {
   final UserChat userChat;
-  final String userFcmToken;
 
-  SendMessageToUserEvent({required this.userChat, required this.userFcmToken});
+  SendMessageToUserEvent({required this.userChat});
 
   @override
   List<Object?> get props => [userChat];

@@ -149,14 +149,11 @@ class NotificationService {
   ) async {
     try {
       final body = {
-        // 'to': userFcmToken,
-        // 'notification': {'title': 'Test Notification', 'body': msg},
         "message": {
           "token": userFcmToken,
           "notification": {"title": name, "body": msg},
         },
       };
-
 
       // Firebase Project > Project Settings > General Tab > Project ID
       const projectID = 'meetup-a53a9';

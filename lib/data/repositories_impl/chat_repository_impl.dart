@@ -17,11 +17,7 @@ class ChatRepositoryImpl extends ChatRepository {
   @override
   Future<DataState<bool>> sendMessageToUser({
     required UserChat userChat,
-    required String userFcmToken,
   }) async {
-    return chatDataSource.sendMessageToUser(
-      userChat: userChat,
-      userFcmToken: userFcmToken,
-    );
+    return chatDataSource.sendMessageToUser(userChat: userChat);
   }
 }
