@@ -19,6 +19,7 @@ class BuddyDataSource {
       for (var buddy in response.docs) {
         final buddyItem = Buddy.fromJson(buddy.data());
 
+        print("Buddy: ${buddyItem.token}");
         if (buddyItem.token == storageManager.token) continue;
 
         buddies.add(buddyItem);
@@ -30,6 +31,7 @@ class BuddyDataSource {
         message: "Connection Error! Please check you network connection.",
       );
     } catch (e) {
+      print("Exception: ${e.toString()}");
       return DataError(message: "Something Went Wrong! Please try again.");
     }
   }

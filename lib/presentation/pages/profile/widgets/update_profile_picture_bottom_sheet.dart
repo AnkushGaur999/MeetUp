@@ -27,13 +27,12 @@ class UpdateProfilePictureBottomSheet extends StatelessWidget {
   }
 
 
-
-
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(12.0),
       child: Column(
+        mainAxisSize: MainAxisSize.max,
         children: [
           Text(
             "Update Profile Picture",

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:meet_up/config/routes/app_routes.dart';
+import 'package:meet_up/core/services/app_bloc_observer.dart';
 import 'package:meet_up/generated/l10n.dart';
 import 'package:meet_up/presentation/bloc/account/account_bloc.dart';
 import 'package:meet_up/presentation/bloc/auth/auth_bloc.dart';
@@ -14,6 +15,9 @@ import 'core/services/notification_service.dart';
 import 'core/utils/firebase_options.dart';
 
 void main() async {
+
+   Bloc.observer =  AppBlocObserver();
+
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);

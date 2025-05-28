@@ -306,7 +306,7 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
                           toId: widget.buddy.token,
                           message: _textController.text,
                           sent: time,
-                          type: MessageType.text.toString(),
+                          type: MessageType.text.name.toString(),
                           imageUrl: widget.buddy.imageUrl,
                           read: false,
                         );

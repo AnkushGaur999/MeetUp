@@ -73,6 +73,7 @@ class AuthDataSource {
         "about": "Hey, I am using MeetUp",
         "fcmToken": fcmToken,
         "deviceId": deviceId,
+        "imageUrl": "https://cdn-icons-png.flaticon.com/512/219/219970.png"
       };
 
       final isUserExist =

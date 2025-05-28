@@ -74,8 +74,8 @@ class AuthBloc extends Bloc<AuthEvents, AuthStates> {
       age: event.age,
       phone: event.phone,
       password: event.password,
-      fcmToken: event.phone,
-      token: fcmToken,
+      fcmToken: fcmToken,
+      token: event.phone,
       deviceId: deviceId,
     );
 
